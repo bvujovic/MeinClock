@@ -5,4 +5,4 @@
  - Beeping on some schedule
  - Stopwatch (w/ fractions of a second)
  
-![Mein Clock - device](https://github.com/bvujovic/MeinClock/blob/master/docs/device_01.jpg)
+![Mein Clock - device](https://github.com/bvujovic/MeinClock/blob/main/docs/device_01.jpg)
