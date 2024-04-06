@@ -6,21 +6,23 @@ Btn::Btn(byte pin)
     pinMode(pin, INPUT_PULLUP);
 }
 
-bool Btn::check(ulong ms)
+ClickType Btn::check(ulong ms)
 {
-    bool result = false;
+    ClickType result = None;
     bool reading = digitalRead(pin);
+    ulong itvPress = ms - msLastDebounce;
     if (reading != lastState)
-        msLastDebounce = millis();
-
-    if ((ms - msLastDebounce) > itvDebounce)
     {
-        if (reading != state)
+        if (reading)
         {
+            // T Serial.println(itvPress);
             state = reading;
-            if (state == false)
-                result = true;
+            if (itvPress > itvLong)
+                result = LongClick;
+            else if (itvPress > itvShort)
+                result = ShortClick;
         }
+        msLastDebounce = millis();
     }
     lastState = reading;
     return result;
