@@ -1,7 +1,3 @@
-//* Mein Clock
-
-// TODO U Btn klasu dodati mogucnost za dupli ili dugi klik (ili obe mogucnosti)
-
 #include <Arduino.h>
 
 #include <U8g2lib.h>

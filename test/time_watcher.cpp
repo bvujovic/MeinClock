@@ -77,22 +77,6 @@ void setup()
   wiFiOff();
 }
 
-// bool shouldBuzz(byte minute, byte pin)
-// {
-//   if (now.minute == minute && !digitalRead(pin))
-//     return true;
-//   else
-//     return false;
-// }
-
-// bool shouldBuzz(byte minute)
-// {
-//   if (now.minute == minute)
-//     return true;
-//   else
-//     return false;
-// }
-
 struct BuzzData
 {
   BuzzData(byte minutes, byte countBuzz, ulong msBuzz)
@@ -121,44 +105,8 @@ void loop()
 
   if (now.second == 0)
   {
-    // byte n = sizeof(buzzes) / sizeof(BuzzData);
-    // for (byte i = 0; i < n; i++)
-    // {
-    //   if (shouldBuzz(buzzes[i].minutes, buzzes[i].pin))
-    //     buzzer.blink(buzzes[i].msBuzz, buzzes[i].countBuzz);
-    // }
     for (BuzzData b : buzzes)
-      // if (shouldBuzz(b.minutes))
       if(b.minutes == now.minute)
         buzzer.blink(b.msBuzz, b.countBuzz);
-
-    // if (shouldBuzz(0, pinHour))
-    //   buzzer.blink(1000, 2);
-    // if (shouldBuzz(10, pin10min))
-    //   buzzer.blink(333, 1);
-    // if (shouldBuzz(20, pin10min))
-    //   buzzer.blink(333, 2);
-    // if (shouldBuzz(30, pin30min))
-    //   buzzer.blink(1000, 1);
-    // if (shouldBuzz(40, pin10min))
-    //   buzzer.blink(333, 1);
-    // if (shouldBuzz(50, pin10min))
-    //   buzzer.blink(333, 2);
-
-    // if (now.minute == 0) // 1h
-    // {
-    //   if (isPinSet(pinHour))
-    //     buzzer.blink(1000, 2);
-    // }
-    // else if (now.minute == 30) // 30min
-    // {
-    //   if (isPinSet(pin30min))
-    //     buzzer.blink(1000, 1);
-    // }
-    // else if (now.minute % 10 == 0) // 10min
-    // {
-    //   if (isPinSet(pin10min))
-    //     buzzer.blink(333, (now.minute == 10 || now.minute == 40) ? 1 : 2); // 10, 40 - 1x, 20, 50 - 2x
-    // }
   }
 }
