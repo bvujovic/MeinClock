@@ -22,7 +22,8 @@ ClickType Btn::check(ulong ms)
             else if (itvPress > itvShort)
                 result = ShortClick;
         }
-        msLastDebounce = millis();
+        //B msLastDebounce = millis();
+        msLastDebounce = ms;
     }
     lastState = reading;
     return result;
