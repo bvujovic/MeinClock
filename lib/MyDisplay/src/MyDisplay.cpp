@@ -10,7 +10,6 @@ MyDisplay::MyDisplay()
 
 void MyDisplay::menu(LinkedList<String> *items)
 {
-    Serial.println("menu");
     if (items == NULL)
         return;
     u8g2->setFont(u8g2_font_7x14_tr);
@@ -27,6 +26,25 @@ void MyDisplay::menu(LinkedList<String> *items)
     msLastDisplay = millis();
 }
 
+void MyDisplay::time(Time *t)
+{
+    // if hourmin - minsec ...?
+    char a[3];
+    char b[3];
+    strcpy(a, u8x8_u8toa(t->minutes, 2));
+    strcpy(b, u8x8_u8toa(t->seconds, 2));
+    u8g2->setFont(u8g2_font_logisoso24_tn);
+    u8g2->firstPage();
+    do
+    {
+        u8g2->drawStr(0, 40, a);
+        u8g2->drawStr(29, 40, ":");
+        u8g2->drawStr(35, 40, b);
+    } while (u8g2->nextPage());
+
+    msLastDisplay = millis();
+}
+
 void MyDisplay::turnOff()
 {
     u8g2->clear();
@@ -37,8 +55,8 @@ void MyDisplay::turnOff()
 void MyDisplay::turnOn()
 {
     u8g2->display();
-    msLastDisplay = millis();
     isItOn = true;
+    msLastDisplay = millis();
 }
 
 void MyDisplay::autoTurnOff(ulong ms)

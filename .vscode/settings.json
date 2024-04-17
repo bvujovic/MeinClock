@@ -11,6 +11,11 @@
         "istream": "cpp",
         "functional": "cpp",
         "tuple": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "chrono": "cpp",
+        "limits": "cpp",
+        "numeric": "cpp",
+        "streambuf": "cpp",
+        "type_traits": "cpp"
     }
 }

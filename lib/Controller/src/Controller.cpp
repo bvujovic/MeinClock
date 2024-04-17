@@ -2,23 +2,35 @@
 
 Controller::Controller()
 {
-    menu = new MenuItem("root", NULL);
-    MenuItem *mi;
+    menu = new MenuItem(MI_ROOT, NULL);
+
     menu->Items = new LinkedList<MenuItem *>();
-    MenuItem *miCountdown = new MenuItem("Countdown", menu);
-    miCountdown->Items = new LinkedList<MenuItem *>();
-    miCountdown->Items->add(new MenuItem("test", miCountdown));
-    menu->Items->add(miCountdown);
-    menu->Items->add(new MenuItem("TimeWatch", menu));
-    menu->Items->add(new MenuItem("Stopwatch", menu));
-    mi = new MenuItem("TurnOffScr", menu);
-    LinkedList<MenuItem *> *items = new LinkedList<MenuItem *>();
-    items->add(new MenuItem("After5sec", mi));
-    items->add(new MenuItem("After5min", mi));
-    items->add(new MenuItem("Never", mi));
-    mi->Items = items;
-    menu->Items->add(mi);
+    {
+        MenuItem *miCountdown = new MenuItem(MI_COUNTDOWN, menu);
+        miCountdown->Items = new LinkedList<MenuItem *>();
+        miCountdown->Items->add(new MenuItem("test", miCountdown));
+        menu->Items->add(miCountdown);
+    }
+    menu->Items->add(new MenuItem(MI_TIMEWATCH, menu));
+    menu->Items->add(new MenuItem(MI_STOPWATCH, menu));
+    {
+        MenuItem *mi = new MenuItem(MI_TURNOFFSCR, menu);
+        LinkedList<MenuItem *> *items = new LinkedList<MenuItem *>();
+        items->add(new MenuItem(MI_AFTER5SEC, mi));
+        items->add(new MenuItem(MI_AFTER5MIN, mi));
+        items->add(new MenuItem(MI_NEVER, mi));
+        mi->Items = items;
+        menu->Items->add(mi);
+    }
     goToRoot();
+}
+
+String Controller::getMenuItemName(int idx)
+{
+    if (miCurrent == NULL || miCurrent->Items == NULL || idx >= miCurrent->Items->size())
+        return "";
+    else
+        return miCurrent->Items->get(idx)->Name;
 }
 
 LinkedList<String> *Controller::getMenuPage()
@@ -30,13 +42,8 @@ LinkedList<String> *Controller::getMenuPage()
     int i = idxPage * 3;
     if (n - i > 3)
         n = 3;
-    Serial.println(i);
-    Serial.println(n);
     for (; i < n; i++)
-    {
-        Serial.println(i);
         items->add(miCurrent->Items->get(i)->Name);
-    }
     return items;
 }
 
@@ -68,7 +75,7 @@ void Controller::goToRoot()
 void Controller::goToItem(int idxItem)
 {
     idxItem = idxItem + idxPage * 3;
-    if (miCurrent->Items == nullptr || miCurrent->Items->size() <= idxItem)
+    if (miCurrent == NULL || miCurrent->Items == NULL || miCurrent->Items->size() <= idxItem)
         return;
     miCurrent = miCurrent->Items->get(idxItem);
     idxPage = 0;

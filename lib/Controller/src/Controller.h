@@ -7,10 +7,19 @@
 struct MenuItem
 {
     String Name;
-    LinkedList<MenuItem *> *Items;
     MenuItem *Parent;
-    MenuItem(String name, MenuItem *parent) { Name = name; Parent = parent; }
+    LinkedList<MenuItem *> *Items;
+    MenuItem(String name, MenuItem *parent) { Name = name; Parent = parent; Items = NULL; }
 };
+
+#define MI_ROOT "root"
+#define MI_COUNTDOWN "Countdown"
+#define MI_TIMEWATCH "TimeWatch"
+#define MI_STOPWATCH "Stopwatch"
+#define MI_TURNOFFSCR "TurnOffScr"
+#define MI_AFTER5SEC "After5sec"
+#define MI_AFTER5MIN "After5min"
+#define MI_NEVER "Never"
 
 class Controller
 {
@@ -23,9 +32,11 @@ public:
     Controller();
 
     // MenuItem getMenuItem(int idx) { return menu->Items->get(idx); }
-    String getMenuItem(int idx) { return menu->Items->get(idx)->Name; }
+    // String getMenuItem(int idx) { return menu->Items->get(idx)->Name; }
+
+    String getMenuItemName(int idx);
     LinkedList<String> *getMenuPage();
-    String getCurrentMenu() { return miCurrent->Name; }
+    String getCurrentMenuName() { return miCurrent->Name; }
 
     void goToRoot();
     void goToNextPage();
