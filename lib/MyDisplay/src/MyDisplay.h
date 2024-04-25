@@ -16,6 +16,8 @@ private:
 
     /// @brief (ms) display will be turned off automatically after this interval
     ulong itvTurnOffDisplay = 0;
+    /// @brief (ms) previous value for itvTurnOffDisplay
+    ulong itvTurnOffDisplayPrev = 0;
 
 public:
     MyDisplay();
@@ -24,7 +26,7 @@ public:
     void menu(LinkedList<String> *items);
     /// @brief Displays time in format hh:mm or mm:ss
     /// @param t Time that will be displayed.
-    void time(Time *t);
+    void time(Time &t, DisplayTime dt);
 
     bool IsItOn() { return isItOn; }
     void turnOff();
@@ -32,7 +34,9 @@ public:
     ulong getMsLastDisplay() { return msLastDisplay; }
     /// @brief Set time interval in msec after which display will turn off if there is no activity.
     /// @param itv Time interval in milliseconds. 0 - don't turn off display.
-    void setItvAutoTurnOff(ulong itv) { itvTurnOffDisplay = itv; msLastDisplay = millis(); }
+    void setItvAutoTurnOff(ulong itv);
+    /// @brief Use the last version of itvTurnOffDisplay.
+    void setItvAutoTurnOffPrev() { setItvAutoTurnOff(itvTurnOffDisplayPrev); }
     /// @brief Turn off display if there were no actions - menu() - for more than itvTurnOffDisplay msecs.
     /// @param ms Current time in milliseconds.
     void autoTurnOff(ulong ms);

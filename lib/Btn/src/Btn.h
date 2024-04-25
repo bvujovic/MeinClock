@@ -1,13 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
-
-enum ClickType
-{
-    None,
-    ShortClick,
-    LongClick
-};
+#include "ButtonEnums.h"
 
 class Btn
 {

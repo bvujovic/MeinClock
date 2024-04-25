@@ -16,6 +16,7 @@
         "limits": "cpp",
         "numeric": "cpp",
         "streambuf": "cpp",
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "ratio": "cpp"
     }
 }

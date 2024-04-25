@@ -13,6 +13,9 @@ Controller ctrl;
 #include "MyDisplay.h"
 MyDisplay disp;
 
+#include "Common.h"
+Apps activeApp = NoApp;
+
 #include "Stopwatch.h"
 Stopwatch sw;
 
@@ -24,12 +27,9 @@ void setup()
     disp.menu(ctrl.getMenuPage());
 }
 
-bool isAppActive = false;
+
 ClickType click;
 int idxBtn;
-
-//* STOPWATCH TEST
-ulong msStart;
 Time t;
 
 void loop()
@@ -46,15 +46,18 @@ void loop()
             break;
         }
 
-    if (isAppActive)
+    if (activeApp == AppStopwatch)
     {
-        int sec = (ms - msStart) / 1000;
-        t.seconds = sec % 60;
-        t.minutes = sec / 60;
-        disp.time(&t);
-
-        if (idxBtn == 1)
-            isAppActive = false;
+        sw.refresh(ms, t);
+        // TODO samo ako ima promena u vremenu - prikazati ga (ima li ovo efekta na potrosnju struje?)
+        disp.time(t, MinSec);
+        sw.buttons(ms, idxBtn, click);
+        if (idxBtn == BtnLeft)
+        {
+            activeApp = NoApp;
+            disp.setItvAutoTurnOffPrev();
+            disp.menu(ctrl.getMenuPage());
+        }
         return;
     }
 
@@ -83,8 +86,7 @@ void loop()
         if (click == ShortClick && ctrl.getMenuItemName(idxBtn) == MI_STOPWATCH)
         {
             disp.setItvAutoTurnOff(0);
-            msStart = ms;
-            isAppActive = true;
+            activeApp = AppStopwatch;
             return;
         }
     }

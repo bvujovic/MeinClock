@@ -26,13 +26,12 @@ void MyDisplay::menu(LinkedList<String> *items)
     msLastDisplay = millis();
 }
 
-void MyDisplay::time(Time *t)
+void MyDisplay::time(Time &t, DisplayTime dt)
 {
-    // if hourmin - minsec ...?
     char a[3];
     char b[3];
-    strcpy(a, u8x8_u8toa(t->minutes, 2));
-    strcpy(b, u8x8_u8toa(t->seconds, 2));
+    strcpy(a, u8x8_u8toa(dt == MinSec ? t.minutes : t.hours, 2));
+    strcpy(b, u8x8_u8toa(dt == MinSec ? t.seconds : t.minutes, 2));
     u8g2->setFont(u8g2_font_logisoso24_tn);
     u8g2->firstPage();
     do
@@ -41,7 +40,6 @@ void MyDisplay::time(Time *t)
         u8g2->drawStr(29, 40, ":");
         u8g2->drawStr(35, 40, b);
     } while (u8g2->nextPage());
-
     msLastDisplay = millis();
 }
 
@@ -56,6 +54,13 @@ void MyDisplay::turnOn()
 {
     u8g2->display();
     isItOn = true;
+    msLastDisplay = millis();
+}
+
+void MyDisplay::setItvAutoTurnOff(ulong itv)
+{
+    itvTurnOffDisplayPrev = itvTurnOffDisplay;
+    itvTurnOffDisplay = itv;
     msLastDisplay = millis();
 }
 
