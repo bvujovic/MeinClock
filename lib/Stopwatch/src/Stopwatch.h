@@ -1,8 +1,9 @@
 #pragma once
 
-#include <Arduino.h>
+// #include <Arduino.h>
 #include "Time.h"
 #include "ButtonEnums.h"
+typedef unsigned long ulong;
 
 /// @brief Measuring time. Methods: start(), stop(), reset().
 class Stopwatch

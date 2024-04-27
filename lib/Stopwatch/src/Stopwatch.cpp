@@ -24,7 +24,5 @@ ulong Stopwatch::getTime(ulong ms)
 void Stopwatch::writeTime(ulong ms, Time &time)
 {
     ms = getTime(ms);
-    ulong sec = ms / 1000;
-    time.minutes = sec / 60;
-    time.seconds = sec % 60;
+    time.fromMilliSeconds(ms);
 }

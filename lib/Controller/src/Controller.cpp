@@ -7,8 +7,8 @@ Controller::Controller()
     menu->Items = new LinkedList<MenuItem *>();
     {
         MenuItem *miCountdown = new MenuItem(MI_COUNTDOWN, menu);
-        miCountdown->Items = new LinkedList<MenuItem *>();
-        miCountdown->Items->add(new MenuItem("test", miCountdown));
+        // miCountdown->Items = new LinkedList<MenuItem *>();
+        // miCountdown->Items->add(new MenuItem("test", miCountdown));
         menu->Items->add(miCountdown);
     }
     menu->Items->add(new MenuItem(MI_TIMEWATCH, menu));

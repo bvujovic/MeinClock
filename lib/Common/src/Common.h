@@ -4,6 +4,6 @@ enum Apps
 {
     NoApp,
     AppStopwatch,
-    AppTimer,
+    AppCountdown,
     AppTimeWatcher
 };

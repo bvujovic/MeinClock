@@ -7,26 +7,28 @@ Btn btnCenter(D6);
 Btn btnRight(D5);
 Btn buttons[] = {btnLeft, btnCenter, btnRight};
 
-#include "Controller.h"
-Controller ctrl;
-
-#include "MyDisplay.h"
-MyDisplay disp;
-
 #include "Common.h"
 Apps activeApp = NoApp;
+#include "Controller.h"
+Controller ctrl;
+#include "MyDisplay.h"
+MyDisplay disp;
+#include "Blinky.h"
+Blinky buzzer = Blinky(D3, true);
 
 #include "Stopwatch.h"
 Stopwatch sw;
+#include "Countdown.h"
+Countdown cd;
 
 void setup()
 {
     Serial.begin(115200);
+    pinMode(buzzer.getPin(), OUTPUT);
     Serial.println("\n*** MEIN CLOCK ***");
     disp.setItvAutoTurnOff(10 * 1000);
     disp.menu(ctrl.getMenuPage());
 }
-
 
 ClickType click;
 int idxBtn;
@@ -60,6 +62,34 @@ void loop()
         }
         return;
     }
+    if (activeApp == AppCountdown)
+    {
+        int res = cd.refresh(ms, t);
+        if (res == 1) // TODO uvesti enum za rezultate refresh/buttons
+        {
+            buzzer.blink(3);
+            cd.setState(CdMenu);
+            disp.menu(cd.getMenuPage());
+        }
+        if (cd.getState() == CdCountdown)
+            disp.time(t, MinSec);
+        cd.buttons(ms, idxBtn, click);
+        if (idxBtn == BtnLeft && click == LongClick)
+        {
+            if (cd.getState() == CdMenu)
+            {
+                activeApp = NoApp;
+                disp.setItvAutoTurnOffPrev();
+                disp.menu(ctrl.getMenuPage());
+            }
+            if (cd.getState() == CdCountdown)
+            {
+                cd.setState(CdMenu);
+                disp.menu(cd.getMenuPage());
+            }
+        }
+        return;
+    }
 
     if (idxBtn != -1)
     {
@@ -83,11 +113,22 @@ void loop()
             disp.menu(ctrl.getMenuPage());
             return;
         }
-        if (click == ShortClick && ctrl.getMenuItemName(idxBtn) == MI_STOPWATCH)
+        // starting apps
+        if (click == ShortClick)
         {
-            disp.setItvAutoTurnOff(0);
-            activeApp = AppStopwatch;
-            return;
+            if (ctrl.getMenuItemName(idxBtn) == MI_STOPWATCH)
+            {
+                disp.setItvAutoTurnOff(0);
+                activeApp = AppStopwatch;
+                return;
+            }
+            if (ctrl.getMenuItemName(idxBtn) == MI_COUNTDOWN)
+            {
+                disp.setItvAutoTurnOff(15 * 1000);
+                activeApp = AppCountdown;
+                disp.menu(cd.getMenuPage());
+                return;
+            }
         }
     }
 
