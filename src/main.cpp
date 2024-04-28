@@ -26,7 +26,7 @@ void setup()
     Serial.begin(115200);
     pinMode(buzzer.getPin(), OUTPUT);
     Serial.println("\n*** MEIN CLOCK ***");
-    disp.setItvAutoTurnOff(10 * 1000);
+    disp.setItvAutoTurnOff(5 * 1000);
     disp.menu(ctrl.getMenuPage());
 }
 
@@ -64,16 +64,33 @@ void loop()
     }
     if (activeApp == AppCountdown)
     {
+        if (idxBtn != -1)
+        {
+            if (!disp.IsItOn())
+            {
+                disp.turnOn();
+                disp.menu(cd.getMenuPage());
+                return;
+            }
+            else
+                disp.ItIsOn(ms);
+        }
         int res = cd.refresh(ms, t);
+        if (cd.getState() == CdCountdown)
+        {
+            if (res == 1 && !disp.IsItOn())
+                disp.turnOn();
+            disp.time(t, MinSec);
+        }
         if (res == 1) // TODO uvesti enum za rezultate refresh/buttons
         {
             buzzer.blink(3);
             cd.setState(CdMenu);
             disp.menu(cd.getMenuPage());
         }
-        if (cd.getState() == CdCountdown)
-            disp.time(t, MinSec);
         cd.buttons(ms, idxBtn, click);
+        if (idxBtn == BtnRight && click == LongClick && cd.getState() == CdMenu)
+            disp.menu(cd.getMenuPage());
         if (idxBtn == BtnLeft && click == LongClick)
         {
             if (cd.getState() == CdMenu)
@@ -124,7 +141,7 @@ void loop()
             }
             if (ctrl.getMenuItemName(idxBtn) == MI_COUNTDOWN)
             {
-                disp.setItvAutoTurnOff(15 * 1000);
+                disp.setItvAutoTurnOff(5 * 1000);
                 activeApp = AppCountdown;
                 disp.menu(cd.getMenuPage());
                 return;

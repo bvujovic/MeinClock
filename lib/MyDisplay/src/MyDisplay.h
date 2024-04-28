@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Arduino.h>
+// #include <Arduino.h>
 #include <U8g2lib.h>
 #include <Wire.h>
 #include "WString.h"
@@ -29,6 +29,7 @@ public:
     void time(Time &t, DisplayTime dt);
 
     bool IsItOn() { return isItOn; }
+    void ItIsOn(ulong ms) { msLastDisplay = ms; }
     void turnOff();
     void turnOn();
     ulong getMsLastDisplay() { return msLastDisplay; }

@@ -5,12 +5,7 @@ Controller::Controller()
     menu = new MenuItem(MI_ROOT, NULL);
 
     menu->Items = new LinkedList<MenuItem *>();
-    {
-        MenuItem *miCountdown = new MenuItem(MI_COUNTDOWN, menu);
-        // miCountdown->Items = new LinkedList<MenuItem *>();
-        // miCountdown->Items->add(new MenuItem("test", miCountdown));
-        menu->Items->add(miCountdown);
-    }
+    menu->Items->add(new MenuItem(MI_COUNTDOWN, menu));
     menu->Items->add(new MenuItem(MI_TIMEWATCH, menu));
     menu->Items->add(new MenuItem(MI_STOPWATCH, menu));
     {
@@ -41,7 +36,7 @@ LinkedList<String> *Controller::getMenuPage()
     int n = miCurrent->Items->size();
     int i = idxPage * 3;
     if (n - i > 3)
-        n = 3;
+        n = i + 3;
     for (; i < n; i++)
         items->add(miCurrent->Items->get(i)->Name);
     return items;

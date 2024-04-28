@@ -2,17 +2,40 @@
 
 Countdown::Countdown()
 {
+    // items.add(CdItem{Time(0, 4), "test 4sec"});
+    // items.add(CdItem{Time(0, 8), "test 8sec"});
     items.add(CdItem{Time(0, 50), "Kafa"});
     items.add(CdItem{Time(4, 0), "Jaja"});
     items.add(CdItem{Time(7, 0), "Bleja"});
+
+    items.add(CdItem{Time(2, 30), "GymS"});
+    items.add(CdItem{Time(5, 00), "GymL"});
+
+    items.add(CdItem{Time(10, 0), "10min"});
+    items.add(CdItem{Time(15, 0), "15min"});
+    items.add(CdItem{Time(30, 0), "30min"});
 }
 
 LinkedList<String> *Countdown::getMenuPage()
 {
     LinkedList<String> *page = new LinkedList<String>();
-    for (int i = 0; i < items.size(); i++)
+    int n = items.size();
+    int i = idxPage * 3;
+    if (n - i > 3)
+        n = i + 3;
+    for (; i < n; i++)
         page->add(items.get(i).Name);
     return page;
+}
+
+void Countdown::goToNextPage()
+{
+    int nItems = items.size();
+    int nPages = (nItems - 1) / 3;
+    if (idxPage < nPages)
+        idxPage++;
+    else
+        idxPage = 0;
 }
 
 int Countdown::refresh(ulong ms, Time &t)
@@ -22,13 +45,8 @@ int Countdown::refresh(ulong ms, Time &t)
     else
     {
         ulong itv = currentItem.CDownTime.toMilliSeconds() - (ms - msStartTime);
-        if (itv < __LONG_MAX__)
-        {
-            t.fromMilliSeconds(itv);
-            return 0;
-        }
-        else
-            return 1;
+        t.fromMilliSeconds(itv + 1000);
+        return itv < __LONG_MAX__ ? 0 : 1;
     }
 }
 
@@ -36,11 +54,13 @@ void Countdown::buttons(ulong ms, int idxBtn, ClickType click)
 {
     if (click == ShortClick)
     {
-        if (state == CdMenu)
+        if (state == CdMenu) // start countdown for selected item
         {
             msStartTime = ms;
-            currentItem = items.get(idxBtn);
+            currentItem = items.get(idxPage * 3 + idxBtn);
             state = CdCountdown;
         }
     }
+    if (click == LongClick && idxBtn == BtnRight && state == CdMenu)
+        goToNextPage();
 }

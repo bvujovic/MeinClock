@@ -40,7 +40,7 @@ void MyDisplay::time(Time &t, DisplayTime dt)
         u8g2->drawStr(29, 40, ":");
         u8g2->drawStr(35, 40, b);
     } while (u8g2->nextPage());
-    msLastDisplay = millis();
+    // msLastDisplay = millis();
 }
 
 void MyDisplay::turnOff()
