@@ -8,12 +8,13 @@ Countdown::Countdown()
     items.add(CdItem{Time(4, 0), "Jaja"});
     items.add(CdItem{Time(7, 0), "Bleja"});
 
-    items.add(CdItem{Time(2, 30), "GymS"});
-    items.add(CdItem{Time(5, 00), "GymL"});
-
+    items.add(CdItem{Time(5, 0), "5min"});
     items.add(CdItem{Time(10, 0), "10min"});
     items.add(CdItem{Time(15, 0), "15min"});
+
     items.add(CdItem{Time(30, 0), "30min"});
+    items.add(CdItem{Time(2, 30), "GymS"});
+    items.add(CdItem{Time(5, 00), "GymL"});
 }
 
 LinkedList<String> *Countdown::getMenuPage()

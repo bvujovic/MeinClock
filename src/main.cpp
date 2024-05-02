@@ -21,12 +21,17 @@ Stopwatch sw;
 #include "Countdown.h"
 Countdown cd;
 
+// Milliseconds in 1 second.
+#define SEC (1000)
+// Milliseconds in 1 minute.
+#define MIN (60 * SEC)
+
 void setup()
 {
     Serial.begin(115200);
     pinMode(buzzer.getPin(), OUTPUT);
     Serial.println("\n*** MEIN CLOCK ***");
-    disp.setItvAutoTurnOff(5 * 1000);
+    disp.setItvAutoTurnOff(5 * SEC);
     disp.menu(ctrl.getMenuPage());
 }
 
@@ -39,6 +44,15 @@ void loop()
     delay(10);
     ulong ms = millis();
     disp.autoTurnOff(ms);
+
+    // TODO ispraviti ovo tako da aparat ne ide u deep sleep dok se meri vreme
+    // if (ms - disp.getMsLastDisplay() > 1 * MIN && (activeApp == NoApp || activeApp == AppStopwatch || (activeApp == AppCountdown)))
+    // {
+    //     // TODO pamcenje stanja (activeApp, prikazan meni i stranica) koje bi se ucitalo po ukljucivanju aparata
+    //     // https://arduino.stackexchange.com/questions/91580/esp8266-rtc-memory-for-bootcount
+    //     //? buzzer.blink(1);
+    //     ESP.deepSleep(0);
+    // }
 
     idxBtn = -1;
     for (size_t i = 0; i < 3; i++)
@@ -121,9 +135,9 @@ void loop()
         if (click == ShortClick && ctrl.getCurrentMenuName() == MI_TURNOFFSCR)
         {
             if (ctrl.getMenuItemName(idxBtn) == MI_AFTER5SEC)
-                disp.setItvAutoTurnOff(5 * 1000);
+                disp.setItvAutoTurnOff(5 * SEC);
             if (ctrl.getMenuItemName(idxBtn) == MI_AFTER5MIN)
-                disp.setItvAutoTurnOff(5 * 60 * 1000);
+                disp.setItvAutoTurnOff(5 * MIN);
             if (ctrl.getMenuItemName(idxBtn) == MI_NEVER)
                 disp.setItvAutoTurnOff(0);
             ctrl.goToParentMenu();
@@ -141,7 +155,7 @@ void loop()
             }
             if (ctrl.getMenuItemName(idxBtn) == MI_COUNTDOWN)
             {
-                disp.setItvAutoTurnOff(5 * 1000);
+                disp.setItvAutoTurnOff(5 * SEC);
                 activeApp = AppCountdown;
                 disp.menu(cd.getMenuPage());
                 return;

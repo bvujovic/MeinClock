@@ -24,10 +24,15 @@ void MyDisplay::menu(LinkedList<String> *items)
             u8g2->drawStr(0, 46, items->get(2).c_str());
     } while (u8g2->nextPage());
     msLastDisplay = millis();
+    secondsPrev = 123; // next time time() is called it will be t.seconds != secondsPrev for sure
+    // so it will display given time
 }
 
 void MyDisplay::time(Time &t, DisplayTime dt)
 {
+    if (t.seconds == secondsPrev)
+        return;
+    secondsPrev = t.seconds;
     char a[3];
     char b[3];
     strcpy(a, u8x8_u8toa(dt == MinSec ? t.minutes : t.hours, 2));
@@ -40,7 +45,6 @@ void MyDisplay::time(Time &t, DisplayTime dt)
         u8g2->drawStr(29, 40, ":");
         u8g2->drawStr(35, 40, b);
     } while (u8g2->nextPage());
-    // msLastDisplay = millis();
 }
 
 void MyDisplay::turnOff()

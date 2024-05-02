@@ -4,6 +4,7 @@ Btn btnCenter(D6);
 void setup()
 {
     Serial.begin(115200);
+    Serial.println();
 }
 
 void loop()
