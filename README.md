@@ -6,3 +6,9 @@
  - Stopwatch
  
 ![Mein Clock - device](https://github.com/bvujovic/MeinClock/blob/main/docs/device_01.jpg)
+
+## Test device (parts)
+![Test device (parts)](https://github.com/bvujovic/MeinClock/blob/main/docs/test_device_parts.jpg)
+
+## Test device (assembled)
+![Test device (assembled)](https://github.com/bvujovic/MeinClock/blob/main/docs/test_device_assembled.jpg)
