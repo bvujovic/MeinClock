@@ -10,7 +10,7 @@ void Stopwatch::buttons(ulong ms, int idxBtn, ClickType click)
     if (idxBtn == BtnCenter)
     {
         if (click == ShortClick)
-            togglePlayPause(ms);
+            toggleStartPause(ms);
         if (click == LongClick)
             reset();
     }

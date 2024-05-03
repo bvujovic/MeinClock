@@ -17,9 +17,11 @@ struct MenuItem
 #define MI_TIMEWATCH "TimeWatch"
 #define MI_STOPWATCH "Stopwatch"
 #define MI_TURNOFFSCR "TurnOffScr"
-#define MI_AFTER5SEC "After5sec"
-#define MI_AFTER5MIN "After5min"
-#define MI_NEVER "Never"
+#define MI_AFTER5SEC "After 5s"
+#define MI_AFTER10SEC "After 10s"
+#define MI_AFTER1MIN "After 1m"
+#define MI_AFTER5MIN "After 5m"
+// #define MI_NEVER "Never"
 
 class Controller
 {
@@ -30,9 +32,6 @@ private:
 
 public:
     Controller();
-
-    // MenuItem getMenuItem(int idx) { return menu->Items->get(idx); }
-    // String getMenuItem(int idx) { return menu->Items->get(idx)->Name; }
 
     String getMenuItemName(int idx);
     LinkedList<String> *getMenuPage();

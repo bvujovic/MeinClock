@@ -12,8 +12,10 @@ Controller::Controller()
         MenuItem *mi = new MenuItem(MI_TURNOFFSCR, menu);
         LinkedList<MenuItem *> *items = new LinkedList<MenuItem *>();
         items->add(new MenuItem(MI_AFTER5SEC, mi));
+        items->add(new MenuItem(MI_AFTER10SEC, mi));
+        items->add(new MenuItem(MI_AFTER1MIN, mi));
         items->add(new MenuItem(MI_AFTER5MIN, mi));
-        items->add(new MenuItem(MI_NEVER, mi));
+        // items->add(new MenuItem(MI_NEVER, mi));
         mi->Items = items;
         menu->Items->add(mi);
     }
@@ -25,7 +27,7 @@ String Controller::getMenuItemName(int idx)
     if (miCurrent == NULL || miCurrent->Items == NULL || idx >= miCurrent->Items->size())
         return "";
     else
-        return miCurrent->Items->get(idx)->Name;
+        return miCurrent->Items->get(idxPage * 3 + idx)->Name;
 }
 
 LinkedList<String> *Controller::getMenuPage()

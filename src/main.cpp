@@ -31,7 +31,7 @@ void setup()
     Serial.begin(115200);
     pinMode(buzzer.getPin(), OUTPUT);
     Serial.println("\n*** MEIN CLOCK ***");
-    disp.setItvAutoTurnOff(5 * SEC);
+    disp.setItvAutoTurnOff(10 * SEC);
     disp.menu(ctrl.getMenuPage());
 }
 
@@ -39,20 +39,28 @@ ClickType click;
 int idxBtn;
 Time t;
 
+/// @brief Go to sleep if the time is not currently measured.
+/// @param ms Current time.
+void goToSleepIN(ulong ms)
+{
+    bool stopwatchOk = activeApp == AppStopwatch && sw.IsPaused();
+    bool countdownOk = activeApp == AppCountdown && cd.getState() == CdMenu;
+    // ulong awakeTime = disp.getItvTurnOffDisplay() < 1 * MIN ? 30 * SEC : disp.getItvTurnOffDisplay() + 1 * MIN;
+    ulong awakeTime = disp.getItvTurnOffDisplay() + (disp.getItvTurnOffDisplay() < 1 * MIN ? 20 * SEC : 1 * MIN);
+    if (ms - disp.getMsLastDisplay() > awakeTime && (activeApp == NoApp || stopwatchOk || countdownOk))
+    {
+        buzzer.blink(1);
+        disp.turnOff();
+        ESP.deepSleep(0);
+    }
+}
+
 void loop()
 {
     delay(10);
     ulong ms = millis();
     disp.autoTurnOff(ms);
-
-    // TODO ispraviti ovo tako da aparat ne ide u deep sleep dok se meri vreme
-    // if (ms - disp.getMsLastDisplay() > 1 * MIN && (activeApp == NoApp || activeApp == AppStopwatch || (activeApp == AppCountdown)))
-    // {
-    //     // TODO pamcenje stanja (activeApp, prikazan meni i stranica) koje bi se ucitalo po ukljucivanju aparata
-    //     // https://arduino.stackexchange.com/questions/91580/esp8266-rtc-memory-for-bootcount
-    //     //? buzzer.blink(1);
-    //     ESP.deepSleep(0);
-    // }
+    goToSleepIN(ms);
 
     idxBtn = -1;
     for (size_t i = 0; i < 3; i++)
@@ -65,13 +73,14 @@ void loop()
     if (activeApp == AppStopwatch)
     {
         sw.refresh(ms, t);
-        // TODO samo ako ima promena u vremenu - prikazati ga (ima li ovo efekta na potrosnju struje?)
         disp.time(t, MinSec);
         sw.buttons(ms, idxBtn, click);
+        if (idxBtn == BtnCenter)
+            disp.ItIsOn(ms);
         if (idxBtn == BtnLeft)
         {
             activeApp = NoApp;
-            disp.setItvAutoTurnOffPrev();
+            // disp.setItvAutoTurnOffPrev();
             disp.menu(ctrl.getMenuPage());
         }
         return;
@@ -110,7 +119,7 @@ void loop()
             if (cd.getState() == CdMenu)
             {
                 activeApp = NoApp;
-                disp.setItvAutoTurnOffPrev();
+                // disp.setItvAutoTurnOffPrev();
                 disp.menu(ctrl.getMenuPage());
             }
             if (cd.getState() == CdCountdown)
@@ -136,10 +145,14 @@ void loop()
         {
             if (ctrl.getMenuItemName(idxBtn) == MI_AFTER5SEC)
                 disp.setItvAutoTurnOff(5 * SEC);
+            if (ctrl.getMenuItemName(idxBtn) == MI_AFTER10SEC)
+                disp.setItvAutoTurnOff(10 * SEC);
+            if (ctrl.getMenuItemName(idxBtn) == MI_AFTER1MIN)
+                disp.setItvAutoTurnOff(1 * MIN);
             if (ctrl.getMenuItemName(idxBtn) == MI_AFTER5MIN)
                 disp.setItvAutoTurnOff(5 * MIN);
-            if (ctrl.getMenuItemName(idxBtn) == MI_NEVER)
-                disp.setItvAutoTurnOff(0);
+            // if (ctrl.getMenuItemName(idxBtn) == MI_NEVER)
+            //     disp.setItvAutoTurnOff(0);
             ctrl.goToParentMenu();
             disp.menu(ctrl.getMenuPage());
             return;
@@ -149,13 +162,13 @@ void loop()
         {
             if (ctrl.getMenuItemName(idxBtn) == MI_STOPWATCH)
             {
-                disp.setItvAutoTurnOff(0);
+                // disp.setItvAutoTurnOff(0);
                 activeApp = AppStopwatch;
                 return;
             }
             if (ctrl.getMenuItemName(idxBtn) == MI_COUNTDOWN)
             {
-                disp.setItvAutoTurnOff(5 * SEC);
+                // disp.setItvAutoTurnOff(5 * SEC);
                 activeApp = AppCountdown;
                 disp.menu(cd.getMenuPage());
                 return;

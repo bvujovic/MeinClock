@@ -45,6 +45,8 @@ public:
     /// @brief Set time interval in msec after which display will turn off if there is no activity.
     /// @param itv Time interval in milliseconds. 0 - don't turn off display.
     void setItvAutoTurnOff(ulong itv);
+    /// @brief Gets time interval in msec after which display will turn off if there is no activity.
+    ulong getItvTurnOffDisplay() { return itvTurnOffDisplay; }
     /// @brief Use the last version of itvTurnOffDisplay.
     void setItvAutoTurnOffPrev() { setItvAutoTurnOff(itvTurnOffDisplayPrev); }
     /// @brief Turn off display if there were no actions - menu() - for more than itvTurnOffDisplay msecs.
