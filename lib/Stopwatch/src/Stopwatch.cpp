@@ -7,7 +7,7 @@ Stopwatch::Stopwatch()
 
 void Stopwatch::buttons(ulong ms, int idxBtn, ClickType click)
 {
-    if (idxBtn == BtnCenter)
+    if (idxBtn == CenterButton)
     {
         if (click == ShortClick)
             toggleStartPause(ms);

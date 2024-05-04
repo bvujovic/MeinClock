@@ -11,11 +11,21 @@ Controller::Controller()
     {
         MenuItem *mi = new MenuItem(MI_TURNOFFSCR, menu);
         LinkedList<MenuItem *> *items = new LinkedList<MenuItem *>();
-        items->add(new MenuItem(MI_AFTER5SEC, mi));
-        items->add(new MenuItem(MI_AFTER10SEC, mi));
-        items->add(new MenuItem(MI_AFTER1MIN, mi));
-        items->add(new MenuItem(MI_AFTER5MIN, mi));
-        // items->add(new MenuItem(MI_NEVER, mi));
+        items->add(new MenuItem("After 5s", mi));
+        items->add(new MenuItem("After 10s", mi));
+        items->add(new MenuItem("After 20s", mi));
+        items->add(new MenuItem("After 1m", mi));
+        items->add(new MenuItem("After 3m", mi));
+        items->add(new MenuItem("After 10m", mi));
+        mi->Items = items;
+        menu->Items->add(mi);
+    }
+    {
+        MenuItem *mi = new MenuItem(MI_GOTOSLEEP, menu);
+        LinkedList<MenuItem *> *items = new LinkedList<MenuItem *>();
+        items->add(new MenuItem("After 1m", mi));
+        items->add(new MenuItem("After 3m", mi));
+        items->add(new MenuItem("After 5m", mi));
         mi->Items = items;
         menu->Items->add(mi);
     }
@@ -76,4 +86,14 @@ void Controller::goToItem(int idxItem)
         return;
     miCurrent = miCurrent->Items->get(idxItem);
     idxPage = 0;
+}
+
+int Controller::timeStrToSec(const String &s)
+{
+    // example for s: "After 1m" or "After 20s"
+    int idx = s.lastIndexOf(' ');
+    if (idx == -1)
+        return 0;
+    String t = s.substring(idx + 1);
+    return t.toInt() * (*(s.end() - 1) == 'm' ? 60 : 1);
 }

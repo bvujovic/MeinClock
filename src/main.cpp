@@ -38,6 +38,8 @@ void setup()
 ClickType click;
 int idxBtn;
 Time t;
+/// @brief How many msec from the last time something is displayed device should go to sleep.
+ulong itvGoToSleep = 3 * MIN;
 
 /// @brief Go to sleep if the time is not currently measured.
 /// @param ms Current time.
@@ -45,8 +47,7 @@ void goToSleepIN(ulong ms)
 {
     bool stopwatchOk = activeApp == AppStopwatch && sw.IsPaused();
     bool countdownOk = activeApp == AppCountdown && cd.getState() == CdMenu;
-    // ulong awakeTime = disp.getItvTurnOffDisplay() < 1 * MIN ? 30 * SEC : disp.getItvTurnOffDisplay() + 1 * MIN;
-    ulong awakeTime = disp.getItvTurnOffDisplay() + (disp.getItvTurnOffDisplay() < 1 * MIN ? 20 * SEC : 1 * MIN);
+    ulong awakeTime = disp.getItvTurnOffDisplay() + itvGoToSleep;
     if (ms - disp.getMsLastDisplay() > awakeTime && (activeApp == NoApp || stopwatchOk || countdownOk))
     {
         buzzer.blink(1);
@@ -70,14 +71,15 @@ void loop()
             break;
         }
 
+    // APPS
     if (activeApp == AppStopwatch)
     {
         sw.refresh(ms, t);
         disp.time(t, MinSec);
         sw.buttons(ms, idxBtn, click);
-        if (idxBtn == BtnCenter)
+        if (idxBtn == CenterButton)
             disp.ItIsOn(ms);
-        if (idxBtn == BtnLeft)
+        if (idxBtn == LeftButton)
         {
             activeApp = NoApp;
             // disp.setItvAutoTurnOffPrev();
@@ -112,9 +114,9 @@ void loop()
             disp.menu(cd.getMenuPage());
         }
         cd.buttons(ms, idxBtn, click);
-        if (idxBtn == BtnRight && click == LongClick && cd.getState() == CdMenu)
+        if (idxBtn == RightButton && click == LongClick && cd.getState() == CdMenu)
             disp.menu(cd.getMenuPage());
-        if (idxBtn == BtnLeft && click == LongClick)
+        if (idxBtn == LeftButton && click == LongClick)
         {
             if (cd.getState() == CdMenu)
             {
@@ -131,8 +133,10 @@ void loop()
         return;
     }
 
+    // MENU
     if (idxBtn != -1)
     {
+        // click & display is off -> turn on display
         if (!disp.IsItOn())
         {
             disp.turnOn();
@@ -143,18 +147,24 @@ void loop()
 
         if (click == ShortClick && ctrl.getCurrentMenuName() == MI_TURNOFFSCR)
         {
-            if (ctrl.getMenuItemName(idxBtn) == MI_AFTER5SEC)
-                disp.setItvAutoTurnOff(5 * SEC);
-            if (ctrl.getMenuItemName(idxBtn) == MI_AFTER10SEC)
-                disp.setItvAutoTurnOff(10 * SEC);
-            if (ctrl.getMenuItemName(idxBtn) == MI_AFTER1MIN)
-                disp.setItvAutoTurnOff(1 * MIN);
-            if (ctrl.getMenuItemName(idxBtn) == MI_AFTER5MIN)
-                disp.setItvAutoTurnOff(5 * MIN);
-            // if (ctrl.getMenuItemName(idxBtn) == MI_NEVER)
-            //     disp.setItvAutoTurnOff(0);
-            ctrl.goToParentMenu();
-            disp.menu(ctrl.getMenuPage());
+            int sec = Controller::timeStrToSec(ctrl.getMenuItemName(idxBtn));
+            if (sec > 0)
+            {
+                disp.setItvAutoTurnOff(sec * SEC);
+                ctrl.goToParentMenu();
+                disp.menu(ctrl.getMenuPage());
+            }
+            return;
+        }
+        if (click == ShortClick && ctrl.getCurrentMenuName() == MI_GOTOSLEEP)
+        {
+            int sec = Controller::timeStrToSec(ctrl.getMenuItemName(idxBtn));
+            if (sec > 0)
+            {
+                itvGoToSleep = sec * SEC;
+                ctrl.goToParentMenu();
+                disp.menu(ctrl.getMenuPage());
+            }
             return;
         }
         // starting apps
@@ -162,47 +172,29 @@ void loop()
         {
             if (ctrl.getMenuItemName(idxBtn) == MI_STOPWATCH)
             {
-                // disp.setItvAutoTurnOff(0);
                 activeApp = AppStopwatch;
                 return;
             }
             if (ctrl.getMenuItemName(idxBtn) == MI_COUNTDOWN)
             {
-                // disp.setItvAutoTurnOff(5 * SEC);
                 activeApp = AppCountdown;
                 disp.menu(cd.getMenuPage());
                 return;
             }
         }
-    }
 
-    if (idxBtn == 0)
-    {
-        if (click == LongClick) // dugi klik
-        {
-            ctrl.goToParentMenu();
-            // disp.menu(ctrl.getMenuPage());
-        }
-        if (click == ShortClick) // kratki klik
-        {
-            ctrl.goToItem(0);
-        }
-        disp.menu(ctrl.getMenuPage());
-    }
-    if (idxBtn == 1)
-    {
         if (click == LongClick)
-            ctrl.goToRoot();
+        {
+            if (idxBtn == LeftButton)
+                ctrl.goToParentMenu();
+            if (idxBtn == CenterButton)
+                ctrl.goToRoot();
+            if (idxBtn == RightButton)
+                ctrl.goToNextPage();
+        }
+
         if (click == ShortClick)
-            ctrl.goToItem(1);
-        disp.menu(ctrl.getMenuPage());
-    }
-    if (idxBtn == 2)
-    {
-        if (click == LongClick)
-            ctrl.goToNextPage();
-        if (click == ShortClick)
-            ctrl.goToItem(2);
+            ctrl.goToItem(idxBtn);
         disp.menu(ctrl.getMenuPage());
     }
 }

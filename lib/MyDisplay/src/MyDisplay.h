@@ -51,5 +51,6 @@ public:
     void setItvAutoTurnOffPrev() { setItvAutoTurnOff(itvTurnOffDisplayPrev); }
     /// @brief Turn off display if there were no actions - menu() - for more than itvTurnOffDisplay msecs.
     /// @param ms Current time in milliseconds.
-    void autoTurnOff(ulong ms);
+    /// @return true if the display is turned off.
+    bool autoTurnOff(ulong ms);
 };

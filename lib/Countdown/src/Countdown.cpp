@@ -2,8 +2,6 @@
 
 Countdown::Countdown()
 {
-    // items.add(CdItem{Time(0, 4), "test 4sec"});
-    // items.add(CdItem{Time(0, 8), "test 8sec"});
     items.add(CdItem{Time(0, 50), "Kafa"});
     items.add(CdItem{Time(4, 0), "Jaja"});
     items.add(CdItem{Time(7, 0), "Bleja"});
@@ -13,8 +11,8 @@ Countdown::Countdown()
     items.add(CdItem{Time(15, 0), "15min"});
 
     items.add(CdItem{Time(30, 0), "30min"});
-    items.add(CdItem{Time(2, 30), "GymS"});
-    items.add(CdItem{Time(5, 00), "GymL"});
+    items.add(CdItem{Time(2, 00), "Gym S"});
+    items.add(CdItem{Time(5, 00), "Gym L"});
 }
 
 LinkedList<String> *Countdown::getMenuPage()
@@ -62,6 +60,6 @@ void Countdown::buttons(ulong ms, int idxBtn, ClickType click)
             state = CdCountdown;
         }
     }
-    if (click == LongClick && idxBtn == BtnRight && state == CdMenu)
+    if (click == LongClick && idxBtn == RightButton && state == CdMenu)
         goToNextPage();
 }

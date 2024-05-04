@@ -68,8 +68,10 @@ void MyDisplay::setItvAutoTurnOff(ulong itv)
     msLastDisplay = millis();
 }
 
-void MyDisplay::autoTurnOff(ulong ms)
+bool MyDisplay::autoTurnOff(ulong ms)
 {
-    if (isItOn && itvTurnOffDisplay != 0 && ms > msLastDisplay + itvTurnOffDisplay)
+    bool res = isItOn && itvTurnOffDisplay != 0 && ms > msLastDisplay + itvTurnOffDisplay;
+    if (res)
         turnOff();
+    return res;
 }

@@ -9,7 +9,7 @@ enum ClickType
 
 enum Button
 {
-    BtnLeft,
-    BtnCenter,
-    BtnRight
+    LeftButton,
+    CenterButton,
+    RightButton
 };
