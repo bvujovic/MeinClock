@@ -4,46 +4,64 @@ TimeWatcher::TimeWatcher()
 {
     pinMode(buzzer.getPin(), OUTPUT);
     buzzer.off();
+}
+
+bool TimeWatcher::initTime()
+{
+    buzzGetTime(true);
     WiFi.begin(WIFI_SSID, WIFI_PASS);
     while (WiFi.status() != WL_CONNECTED)
-    {
-        delay(500);
-        // Serial.print(".");
-    }
-    // Serial.println("");
-    // Serial.print("Connected to network: ");
-    // Serial.println(WIFI_SSID);
+        delay(250);
     delay(100);
-    getCurrentTime();
-    wiFiOff();
+    if (WiFi.status() == WL_CONNECTED)
+    {
+        bool res = getCurrentTime();
+        wiFiOff();
+        buzzGetTime(res);
+        return res;
+    }
+    buzzGetTime(false);
+    return false;
 }
 
-void TimeWatcher::getCurrentTime()
+int TimeWatcher::refresh(ulong ms, Time &t)
 {
-    isTimeSet = false;
-    cntTrySetTime = 0;
-    while (!ntp.setSNTPtime() && cntTrySetTime++ < maxTrySetTime)
-        ; // Serial.print("*");
-    //   Serial.println();
-    if (cntTrySetTime < maxTrySetTime)
-    {
-        isTimeSet = true;
-        // Serial.println("Time set");
-    }
+    now = ntp.getTime(1.0, 1);
+    t.minutes = now.hour;
+    t.seconds = now.minute;
+    return 0;
+}
+
+void TimeWatcher::buzzIN()
+{
+  if (now.second == 0)
+  {
+    for (BuzzData b : buzzes)
+      if(b.minutes == now.minute)
+        buzzer.blink(b.itvBuzz, b.countBuzz);
+  }
+}
+
+void TimeWatcher::buzzGetTime(bool success)
+{
+    if (success)
+        buzzer.blink(100, 2);
     else
-    {
-        // Serial.println("Time NOT set");
-        // noTimeError();
-    }
+        buzzer.blink(1000, 1);
 }
 
-void wiFiOff()
+bool TimeWatcher::getCurrentTime()
 {
-    //   Serial.println("Turning WiFi OFF...");
+    const ulong maxTrySetTime = 3;
+    ulong cntTrySetTime = 0;
+    while (!ntp.setSNTPtime() && cntTrySetTime++ < maxTrySetTime)
+        ;
+    return cntTrySetTime < maxTrySetTime;
+}
+
+void TimeWatcher::wiFiOff()
+{
     WiFi.disconnect();
     WiFi.mode(WIFI_OFF);
     WiFi.forceSleepBegin();
-    delay(100);
-    //   Serial.println("WiFi OFF");
-    //   led.off();
 }

@@ -1,35 +1,34 @@
 #pragma once
 
 #include <Blinky.h> // https://github.com/bvujovic/ArduinoLibs/tree/main/Blinky
-
 #include "ESP8266WiFi.h"
 #include "CredWiFi.h"
 #include <SNTPtime.h>
-SNTPtime ntp;
-StrDateTime now;
+#include "Time.h"
 
-bool isTimeSet;
-ulong cntTrySetTime = 0;
-const ulong maxTrySetTime = 3;
+// bool isTimeSet;
+// ulong cntTrySetTime = 0;
+// const ulong maxTrySetTime = 3;
 
 // typedef unsigned char byte;
 // typedef unsigned long ulong;
 
 struct BuzzData
 {
-    BuzzData(byte minutes, byte countBuzz, ulong msBuzz)
-        : minutes(minutes), countBuzz(countBuzz), msBuzz(msBuzz)
+    BuzzData(byte minutes, byte countBuzz, ulong itvBuzz)
+        : minutes(minutes), countBuzz(countBuzz), itvBuzz(itvBuzz)
     {
     }
     byte minutes;
     byte countBuzz;
-    ulong msBuzz;
+    ulong itvBuzz;
 };
 
 class TimeWatcher
 {
 private:
-    bool on = false;
+    SNTPtime ntp;
+    StrDateTime now;
     BuzzData buzzes[6] = {
         BuzzData(0, 2, 1000),
         BuzzData(10, 1, 333),
@@ -37,15 +36,17 @@ private:
         BuzzData(30, 1, 1000),
         BuzzData(40, 1, 333),
         BuzzData(50, 2, 333)};
+    // TODO ovde je ponovo definisan bazer u projektu - srediti da postoji samo jedna definicija
     Blinky buzzer = Blinky(D3, true);
 
-    void getCurrentTime();
+    bool getCurrentTime();
+    void buzzGetTime(bool success);
     void wiFiOff();
 
 public:
-    bool IsItOn() { return on; }
-    void turnOn() { on = true; }
-    void turnOff() { on = false; }
-
     TimeWatcher();
+
+    bool initTime();
+    int refresh(ulong ms, Time &t);
+    void buzzIN();
 };

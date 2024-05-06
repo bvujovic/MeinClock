@@ -20,6 +20,8 @@ Blinky buzzer = Blinky(D3, true);
 Stopwatch sw;
 #include "Countdown.h"
 Countdown cd;
+#include "TimeWatcher.h"
+TimeWatcher tw;
 
 // Milliseconds in 1 second.
 #define SEC (1000)
@@ -47,6 +49,7 @@ void goToSleepIN(ulong ms)
 {
     bool stopwatchOk = activeApp == AppStopwatch && sw.IsPaused();
     bool countdownOk = activeApp == AppCountdown && cd.getState() == CdMenu;
+    // TODO add bool timewatcherOk = ...
     ulong awakeTime = disp.getItvTurnOffDisplay() + itvGoToSleep;
     if (ms - disp.getMsLastDisplay() > awakeTime && (activeApp == NoApp || stopwatchOk || countdownOk))
     {
@@ -121,7 +124,6 @@ void loop()
             if (cd.getState() == CdMenu)
             {
                 activeApp = NoApp;
-                // disp.setItvAutoTurnOffPrev();
                 disp.menu(ctrl.getMenuPage());
             }
             if (cd.getState() == CdCountdown)
@@ -129,6 +131,34 @@ void loop()
                 cd.setState(CdMenu);
                 disp.menu(cd.getMenuPage());
             }
+        }
+        return;
+    }
+    if (activeApp == AppTimeWatcher)
+    {
+        //* COPY/PASTE CODE
+        // wake up display
+        if (idxBtn != -1)
+        {
+            if (!disp.IsItOn())
+            {
+                disp.turnOn();
+                disp.menu(cd.getMenuPage());
+                return;
+            }
+            else
+                disp.ItIsOn(ms);
+        }
+        tw.refresh(ms, t);
+        disp.time(t, MinSec);
+        //TODO budjenje displeja pre pistanja
+        tw.buzzIN();
+
+        // tw.buttons(ms, idxBtn, click);
+        if (idxBtn == LeftButton && click == LongClick)
+        {
+            activeApp = NoApp;
+            disp.menu(ctrl.getMenuPage());
         }
         return;
     }
@@ -145,6 +175,7 @@ void loop()
         }
         // Serial.printf("%d, %s\n", idxBtn, ctrl.getCurrentMenuName().c_str());
 
+        // handling options/settings: Turn off display and Go to sleep
         if (click == ShortClick && ctrl.getCurrentMenuName() == MI_TURNOFFSCR)
         {
             int sec = Controller::timeStrToSec(ctrl.getMenuItemName(idxBtn));
@@ -181,6 +212,14 @@ void loop()
                 disp.menu(cd.getMenuPage());
                 return;
             }
+            if (ctrl.getMenuItemName(idxBtn) == MI_TIMEWATCH)
+            {
+                activeApp = AppTimeWatcher;
+                disp.turnOff();
+                tw.initTime();
+                disp.turnOn();
+                return;
+            }
         }
 
         if (click == LongClick)
@@ -192,7 +231,7 @@ void loop()
             if (idxBtn == RightButton)
                 ctrl.goToNextPage();
         }
-
+        // short click -> go to item (starting app/selecting some option)
         if (click == ShortClick)
             ctrl.goToItem(idxBtn);
         disp.menu(ctrl.getMenuPage());
