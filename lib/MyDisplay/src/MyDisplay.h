@@ -15,8 +15,10 @@ private:
     ulong msLastDisplay;
     /// @brief Is the display turned on.
     bool isItOn;
+    /// @brief Default/fake value for previous displayed seconds 
+    const byte secondsPrevDef = 123;
     /// @brief Previous displayed seconds 
-    byte secondsPrev = 123;
+    byte secondsPrev = secondsPrevDef;
 
     /// @brief (ms) display will be turned off automatically after this interval
     ulong itvTurnOffDisplay = 0;
@@ -52,5 +54,5 @@ public:
     /// @brief Turn off display if there were no actions - menu() - for more than itvTurnOffDisplay msecs.
     /// @param ms Current time in milliseconds.
     /// @return true if the display is turned off.
-    bool autoTurnOff(ulong ms);
+    bool autoTurnOffIN(ulong ms);
 };

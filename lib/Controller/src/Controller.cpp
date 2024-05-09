@@ -34,10 +34,11 @@ Controller::Controller()
 
 String Controller::getMenuItemName(int idx)
 {
+    idx = idxPage * 3 + idx;
     if (miCurrent == NULL || miCurrent->Items == NULL || idx >= miCurrent->Items->size())
         return "";
     else
-        return miCurrent->Items->get(idxPage * 3 + idx)->Name;
+        return miCurrent->Items->get(idx)->Name;
 }
 
 LinkedList<String> *Controller::getMenuPage()

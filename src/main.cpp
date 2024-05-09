@@ -13,8 +13,10 @@ Apps activeApp = NoApp;
 Controller ctrl;
 #include "MyDisplay.h"
 MyDisplay disp;
-#include "Blinky.h"
+#include "Blinky.h" // https://github.com/bvujovic/ArduinoLibs/tree/main/Blinky
 Blinky buzzer = Blinky(D3, true);
+#include "EasyINI.h" // https://github.com/bvujovic/ArduinoLibs/tree/main/EasyINI
+EasyINI ei("/setts.ini");
 
 #include "Stopwatch.h"
 Stopwatch sw;
@@ -28,20 +30,47 @@ TimeWatcher tw;
 // Milliseconds in 1 minute.
 #define MIN (60 * SEC)
 
-void setup()
-{
-    Serial.begin(115200);
-    pinMode(buzzer.getPin(), OUTPUT);
-    Serial.println("\n*** MEIN CLOCK ***");
-    disp.setItvAutoTurnOff(10 * SEC);
-    disp.menu(ctrl.getMenuPage());
-}
-
 ClickType click;
 int idxBtn;
 Time t;
 /// @brief How many msec from the last time something is displayed device should go to sleep.
 ulong itvGoToSleep = 3 * MIN;
+
+void readIni()
+{
+    const int turnOffScrDef = 10 * SEC;
+    const int goToSleepDef = 180 * SEC;
+    if (ei.open(FMOD_READ))
+    {
+        disp.setItvAutoTurnOff(ei.getInt(MI_TURNOFFSCR, turnOffScrDef));
+        itvGoToSleep = ei.getInt(MI_GOTOSLEEP, goToSleepDef);
+        ei.close();
+    }
+    else
+    {
+        disp.setItvAutoTurnOff(turnOffScrDef);
+        itvGoToSleep = goToSleepDef;
+    }
+}
+
+void saveIni()
+{
+    if (ei.open(FMOD_WRITE))
+    {
+        ei.setInt(MI_TURNOFFSCR, disp.getItvTurnOffDisplay());
+        ei.setInt(MI_GOTOSLEEP, itvGoToSleep);
+        ei.close();
+    }
+}
+
+void setup()
+{
+    Serial.begin(115200);
+    pinMode(buzzer.getPin(), OUTPUT);
+    Serial.println("\n*** MEIN CLOCK ***");
+    readIni();
+    disp.menu(ctrl.getMenuPage());
+}
 
 /// @brief Go to sleep if the time is not currently measured.
 /// @param ms Current time.
@@ -63,7 +92,7 @@ void loop()
 {
     delay(10);
     ulong ms = millis();
-    disp.autoTurnOff(ms);
+    disp.autoTurnOffIN(ms);
     goToSleepIN(ms);
 
     idxBtn = -1;
@@ -77,15 +106,26 @@ void loop()
     // APPS
     if (activeApp == AppStopwatch)
     {
+        if (idxBtn != -1)
+        {
+            if (!disp.IsItOn())
+            {
+                disp.turnOn();
+                disp.time(t, MinSecCent);
+                return;
+            }
+            else
+                disp.ItIsOn(ms);
+        }
         sw.refresh(ms, t);
-        disp.time(t, MinSec);
+        disp.time(t, MinSecCent);
         sw.buttons(ms, idxBtn, click);
         if (idxBtn == CenterButton)
             disp.ItIsOn(ms);
         if (idxBtn == LeftButton)
         {
             activeApp = NoApp;
-            // disp.setItvAutoTurnOffPrev();
+            disp.setItvAutoTurnOffPrev();
             disp.menu(ctrl.getMenuPage());
         }
         return;
@@ -151,7 +191,7 @@ void loop()
         }
         tw.refresh(ms, t);
         disp.time(t, MinSec);
-        //TODO budjenje displeja pre pistanja
+        // TODO budjenje displeja pre pistanja
         tw.buzzIN();
 
         // tw.buttons(ms, idxBtn, click);
@@ -182,6 +222,7 @@ void loop()
             if (sec > 0)
             {
                 disp.setItvAutoTurnOff(sec * SEC);
+                saveIni();
                 ctrl.goToParentMenu();
                 disp.menu(ctrl.getMenuPage());
             }
@@ -193,6 +234,7 @@ void loop()
             if (sec > 0)
             {
                 itvGoToSleep = sec * SEC;
+                saveIni();
                 ctrl.goToParentMenu();
                 disp.menu(ctrl.getMenuPage());
             }
@@ -204,6 +246,7 @@ void loop()
             if (ctrl.getMenuItemName(idxBtn) == MI_STOPWATCH)
             {
                 activeApp = AppStopwatch;
+                disp.setItvAutoTurnOff(0);
                 return;
             }
             if (ctrl.getMenuItemName(idxBtn) == MI_COUNTDOWN)
