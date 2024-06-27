@@ -24,6 +24,7 @@ Stopwatch sw;
 Countdown cd;
 #include "TimeWatcher.h"
 TimeWatcher tw;
+#include "CsvReader.h"
 
 // Milliseconds in 1 second.
 #define SEC (1000)
@@ -35,6 +36,29 @@ int idxBtn;
 Time t;
 /// @brief How many msec from the last time something is displayed device should go to sleep.
 ulong itvGoToSleep = 3 * MIN;
+
+void readCountdownCSV()
+{
+    CsvReader csv("/countdown.csv", 2);
+    if (csv.fileOpenSuccess())
+    {
+        while (true)
+        {
+            String *ss = csv.readLine();
+            if (ss == NULL)
+                break;
+            int idx = ss[1].indexOf(':');
+            if (idx == -1)
+                continue;
+            int min = ss[1].substring(0, idx).toInt();
+            int sec = ss[1].substring(idx + 1).toInt();
+            CdItem item = CdItem{Time(min, sec), ss[0]};
+            cd.addMenuItem(item);
+        }
+    }
+    else
+        Serial.println("no CSV file.");
+}
 
 void readIni()
 {
@@ -67,8 +91,12 @@ void setup()
 {
     Serial.begin(115200);
     pinMode(buzzer.getPin(), OUTPUT);
+    buzzer.off();
+    tw.setBuzzer(&buzzer);
     Serial.println("\n*** MEIN CLOCK ***");
+    LittleFS.begin();
     readIni();
+    readCountdownCSV();
     disp.menu(ctrl.getMenuPage());
 }
 

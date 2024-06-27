@@ -35,8 +35,7 @@ private:
     int idxPage = 0;
 
 public:
-    Countdown();
-
+    void addMenuItem(const CdItem &it);
     CdAppState getState() { return state; }
     void setState(CdAppState state) { this->state = state; }
     // void start(ulong ms) { msStartTime = ms; }

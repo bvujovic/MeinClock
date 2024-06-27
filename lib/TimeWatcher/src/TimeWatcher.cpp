@@ -1,11 +1,5 @@
 #include "TimeWatcher.h"
 
-TimeWatcher::TimeWatcher()
-{
-    pinMode(buzzer.getPin(), OUTPUT);
-    buzzer.off();
-}
-
 bool TimeWatcher::initTime()
 {
     buzzGetTime(true);
@@ -24,32 +18,6 @@ bool TimeWatcher::initTime()
     return false;
 }
 
-int TimeWatcher::refresh(ulong ms, Time &t)
-{
-    now = ntp.getTime(1.0, 1);
-    t.minutes = now.hour;
-    t.seconds = now.minute;
-    return 0;
-}
-
-void TimeWatcher::buzzIN()
-{
-  if (now.second == 0)
-  {
-    for (BuzzData b : buzzes)
-      if(b.minutes == now.minute)
-        buzzer.blink(b.itvBuzz, b.countBuzz);
-  }
-}
-
-void TimeWatcher::buzzGetTime(bool success)
-{
-    if (success)
-        buzzer.blink(100, 2);
-    else
-        buzzer.blink(1000, 1);
-}
-
 bool TimeWatcher::getCurrentTime()
 {
     const ulong maxTrySetTime = 3;
@@ -64,4 +32,31 @@ void TimeWatcher::wiFiOff()
     WiFi.disconnect();
     WiFi.mode(WIFI_OFF);
     WiFi.forceSleepBegin();
+}
+
+int TimeWatcher::refresh(ulong ms, Time &t)
+{
+    now = ntp.getTime(1.0, 1);
+    t.minutes = now.hour;
+    t.seconds = now.minute;
+    return 0;
+}
+
+void TimeWatcher::buzzIN()
+{
+    if (now.second == 0 && prevMinutesBuzzIN != now.minute)
+    {
+        prevMinutesBuzzIN = now.minute;
+        for (BuzzData b : buzzes)
+            if (b.minutes == now.minute)
+                buzzer->blink(b.itvBuzz, b.countBuzz);
+    }
+}
+
+void TimeWatcher::buzzGetTime(bool success)
+{
+    if (success)
+        buzzer->blink(100, 2);
+    else
+        buzzer->blink(1000, 1);
 }

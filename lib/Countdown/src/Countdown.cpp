@@ -1,18 +1,8 @@
 #include "Countdown.h"
 
-Countdown::Countdown()
+void Countdown::addMenuItem(const CdItem& it)
 {
-    items.add(CdItem{Time(0, 50), "Kafa"});
-    items.add(CdItem{Time(4, 0), "Jaja"});
-    items.add(CdItem{Time(7, 0), "Bleja"});
-
-    items.add(CdItem{Time(5, 0), "5min"});
-    items.add(CdItem{Time(10, 0), "10min"});
-    items.add(CdItem{Time(15, 0), "15min"});
-
-    items.add(CdItem{Time(30, 0), "30min"});
-    items.add(CdItem{Time(2, 00), "Gym S"});
-    items.add(CdItem{Time(5, 00), "Gym L"});
+    items.add(it);
 }
 
 LinkedList<String> *Countdown::getMenuPage()
