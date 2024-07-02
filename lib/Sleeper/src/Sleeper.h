@@ -1,6 +1,5 @@
 #pragma once
 
-// #include <sys/_stdint.h>
 #include <Esp.h>
 
 /// @brief Data that will be saved/loaded before/after deep sleep.
@@ -12,17 +11,24 @@ struct SleepMem
     uint16_t counter;
 };
 
+/// @brief Handling deep sleep, save/load data before/after 2sec "nap"
 class Sleeper
 {
 private:
-    SleepMem sleepMem;
+    /// @brief Data that will be saved/loaded before/after deep sleep.
+    static SleepMem sleepMem;
 
 public:
-    Sleeper(/* args */);
+    /// @brief Gets sleepMem structure.
+    static SleepMem &getMem() { return sleepMem; }
+    /// @brief Increments counter in sleepMem structure.
+    static void counterInc() { sleepMem.counter++; }
 
-    SleepMem& GetMem() { return sleepMem; }
-    void CounterInc() { sleepMem.counter++; }
+    /// @brief Save sleepMem structure to RTC memory.
+    static void memSave() { ESP.rtcUserMemoryWrite(0, (uint32_t *)&sleepMem, sizeof(SleepMem)); }
+    /// @brief Load sleepMem structure from RTC memory.
+    static void memLoad() { ESP.rtcUserMemoryRead(0, (uint32_t *)&sleepMem, sizeof(SleepMem)); }
 
-    /// @brief DeepSleep for a 2 seconds minus time for wakeup and setup()
-    void nap();
+    /// @brief DeepSleep for a 2 seconds minus time for wakeup and setup().
+    static void nap();
 };

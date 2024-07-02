@@ -11,3 +11,6 @@
 
 ## Test device (assembled)
 ![Test device (assembled)](docs/test_device_assembled.jpg)
+
+## Device - final
+![Test device (assembled)](docs/device_final.jpg)

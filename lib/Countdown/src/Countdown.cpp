@@ -35,7 +35,7 @@ int Countdown::refresh(ulong ms, Time &t)
     {
         ulong itv = currentItem.CDownTime.toMilliSeconds() - (ms - msStartTime);
         t.fromMilliSeconds(itv + 1000);
-        // if countdown is still ongoing itv represends number of msecs left and it will be small positive number
+        // if countdown is still ongoing, itv represents number of msecs left and it will be small positive number
         // when msecs passed are greater then msecs of selected item, since itv is unsigned and can't be negative,
         // itv will be some very large number 
         return itv < __LONG_MAX__ ? 0 : 1;

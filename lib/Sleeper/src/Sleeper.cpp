@@ -1,10 +1,13 @@
 #include "Sleeper.h"
 
-Sleeper::Sleeper()
-{
-}
+SleepMem Sleeper::sleepMem;
 
 void Sleeper::nap()
 {
-    ESP.deepSleep(2000000);
+    memSave();
+    uint32_t passed = 220 + millis();
+    if (2000000 > passed)
+        ESP.deepSleep(2000000 - passed);
+    else
+        ESP.deepSleep(1);
 }
