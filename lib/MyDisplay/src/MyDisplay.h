@@ -26,7 +26,7 @@ private:
     ulong itvTurnOffDisplayPrev = 0;
 
 public:
-    MyDisplay();
+    void init();
     /// @brief Displays up to 3 items from the list items.
     /// @param items List of items (strings) that will be displayed.
     void menu(LinkedList<String> *items);

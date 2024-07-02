@@ -90,11 +90,13 @@ void saveIni()
 void setup()
 {
     Serial.begin(115200);
+    Serial.println("\n*** MEIN CLOCK ***");
     pinMode(buzzer.getPin(), OUTPUT);
     buzzer.off();
     tw.setBuzzer(&buzzer);
-    Serial.println("\n*** MEIN CLOCK ***");
-    LittleFS.begin();
+    ctrl.init();
+    disp.init();
+    // LittleFS.begin();
     readIni();
     readCountdownCSV();
     disp.menu(ctrl.getMenuPage());

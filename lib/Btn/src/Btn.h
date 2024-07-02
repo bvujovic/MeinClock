@@ -19,4 +19,5 @@ public:
     Btn(byte pin);
 
     ClickType check(ulong ms);
+    bool isPressed();
 };

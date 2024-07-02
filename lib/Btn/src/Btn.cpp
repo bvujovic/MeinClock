@@ -32,3 +32,8 @@ ClickType Btn::check(ulong ms)
     lastState = newState;
     return result;
 }
+
+bool Btn::isPressed()
+{
+    return !digitalRead(pin);
+}

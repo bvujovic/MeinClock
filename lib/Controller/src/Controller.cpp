@@ -1,6 +1,6 @@
 #include "Controller.h"
 
-Controller::Controller()
+void Controller::init()
 {
     menu = new MenuItem(MI_ROOT, NULL);
 
@@ -11,9 +11,9 @@ Controller::Controller()
     {
         MenuItem *mi = new MenuItem(MI_TURNOFFSCR, menu);
         LinkedList<MenuItem *> *items = new LinkedList<MenuItem *>();
+        items->add(new MenuItem("After 2s", mi));
         items->add(new MenuItem("After 5s", mi));
-        items->add(new MenuItem("After 10s", mi));
-        items->add(new MenuItem("After 20s", mi));
+        items->add(new MenuItem("After 15s", mi));
         items->add(new MenuItem("After 1m", mi));
         items->add(new MenuItem("After 3m", mi));
         items->add(new MenuItem("After 10m", mi));

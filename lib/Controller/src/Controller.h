@@ -27,12 +27,11 @@ private:
     int idxPage;
 
 public:
-    Controller();
-
     String getMenuItemName(int idx);
     LinkedList<String> *getMenuPage();
     String getCurrentMenuName() { return miCurrent->Name; }
 
+    void init();
     void goToRoot();
     void goToNextPage();
     void goToParentMenu();

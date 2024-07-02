@@ -1,6 +1,6 @@
 #include "MyDisplay.h"
 
-MyDisplay::MyDisplay()
+void MyDisplay::init()
 {
     u8g2 = new U8G2_SSD1306_64X48_ER_1_HW_I2C(U8G2_R0, /* reset=*/U8X8_PIN_NONE);
     u8g2->begin();
