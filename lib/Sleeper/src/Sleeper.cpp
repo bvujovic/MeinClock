@@ -11,3 +11,9 @@ void Sleeper::nap()
     else
         ESP.deepSleep(1);
 }
+
+void Sleeper::sleep(uint32_t itv)
+{
+    memSave();
+    ESP.deepSleep(itv * 1000);
+}

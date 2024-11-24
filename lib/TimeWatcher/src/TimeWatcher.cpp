@@ -4,18 +4,24 @@ bool TimeWatcher::initTime()
 {
     buzzGetTime(true);
     WiFi.begin(WIFI_SSID, WIFI_PASS);
-    while (WiFi.status() != WL_CONNECTED)
+    auto msStart = millis();
+    while (WiFi.status() != WL_CONNECTED && millis() < msStart + 10000) // wait max 10 secs
         delay(250);
-    delay(100);
+    //? delay(100);
     if (WiFi.status() == WL_CONNECTED)
     {
         bool res = getCurrentTime();
         wiFiOff();
-        buzzGetTime(res);
-        return res;
+        return buzzGetTime(res);
+        // buzzGetTime(res);
+        // return res;
     }
-    buzzGetTime(false);
-    return false;
+    else
+        return buzzGetTime(false);
+    // {
+    //     buzzGetTime(false);
+    //     return false;
+    // }
 }
 
 bool TimeWatcher::getCurrentTime()
@@ -53,10 +59,11 @@ void TimeWatcher::buzzIN()
     }
 }
 
-void TimeWatcher::buzzGetTime(bool success)
+bool TimeWatcher::buzzGetTime(bool success)
 {
     if (success)
         buzzer->blink(100, 2);
     else
         buzzer->blink(1000, 1);
+    return success;
 }

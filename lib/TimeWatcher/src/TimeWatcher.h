@@ -33,7 +33,7 @@ private:
     byte prevMinutesBuzzIN = 123;
 
     bool getCurrentTime();
-    void buzzGetTime(bool success);
+    bool buzzGetTime(bool success);
     void wiFiOff();
 
 public:

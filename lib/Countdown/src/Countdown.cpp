@@ -1,6 +1,8 @@
 #include "Countdown.h"
+// #include <Sleeper.h>
+// #include <Common.h>
 
-void Countdown::addMenuItem(const CdItem& it)
+void Countdown::addMenuItem(const CdItem &it)
 {
     items.add(it);
 }
@@ -27,22 +29,23 @@ void Countdown::goToNextPage()
         idxPage = 0;
 }
 
-int Countdown::refresh(ulong ms, Time &t)
+int Countdown::refresh(uint32_t ms, Time &t)
 {
     if (state == CdMenu)
         return 0;
     else
     {
-        ulong itv = currentItem.CDownTime.toMilliSeconds() - (ms - msStartTime);
+        //B ulong itv = currentItem.CDownTime.toMilliSeconds() - (ms - msStartTime);
+        uint32_t itv = getSleepInterval(ms);
         t.fromMilliSeconds(itv + 1000);
         // if countdown is still ongoing, itv represents number of msecs left and it will be small positive number
         // when msecs passed are greater then msecs of selected item, since itv is unsigned and can't be negative,
-        // itv will be some very large number 
+        // itv will be some very large number
         return itv < __LONG_MAX__ ? 0 : 1;
     }
 }
 
-void Countdown::buttons(ulong ms, int idxBtn, ClickType click)
+void Countdown::buttons(uint32_t ms, int idxBtn, ClickType click)
 {
     if (click == ShortClick)
     {
@@ -55,4 +58,11 @@ void Countdown::buttons(ulong ms, int idxBtn, ClickType click)
     }
     if (click == LongClick && idxBtn == RightButton && state == CdMenu)
         goToNextPage();
+    // B
+    // if (click == ShortClick && idxBtn == CenterButton)
+    // {
+    //     ulong itv = currentItem.CDownTime.toMilliSeconds() - (ms - msStartTime);
+    //     Sleeper::setMem(SleepMem(AppCountdown, idxPage, 0));
+    //     Sleeper::sleep(itv);
+    // }
 }

@@ -29,6 +29,7 @@ void Controller::init()
         mi->Items = items;
         menu->Items->add(mi);
     }
+    menu->Items->add(new MenuItem(MI_WEBSERVER, menu));
     goToRoot();
 }
 

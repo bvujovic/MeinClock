@@ -16,7 +16,7 @@ MyDisplay disp;
 #include "Blinky.h" // https://github.com/bvujovic/ArduinoLibs/tree/main/Blinky
 Blinky buzzer = Blinky(D3, true);
 #include "EasyINI.h" // https://github.com/bvujovic/ArduinoLibs/tree/main/EasyINI
-EasyINI ei("/setts.ini");
+EasyINI ei("/dat/setts.ini");
 
 #include "Stopwatch.h"
 Stopwatch sw;
@@ -24,7 +24,10 @@ Stopwatch sw;
 Countdown cd;
 #include "TimeWatcher.h"
 TimeWatcher tw;
+#include "WebServer.h"
+WebServer ws;
 #include "CsvReader.h"
+#include "Sleeper.h"
 
 // Milliseconds in 1 second.
 #define SEC (1000)
@@ -39,7 +42,7 @@ ulong itvGoToSleep = 3 * MIN;
 
 void readCountdownCSV()
 {
-    CsvReader csv("/countdown.csv", 2);
+    CsvReader csv("/dat/countdown.csv", 2);
     if (csv.fileOpenSuccess())
     {
         while (true)
@@ -89,6 +92,7 @@ void saveIni()
 
 void setup()
 {
+    uint32_t msPocetak = millis();
     Serial.begin(115200);
     Serial.println("\n*** MEIN CLOCK ***");
     pinMode(buzzer.getPin(), OUTPUT);
@@ -96,10 +100,10 @@ void setup()
     tw.setBuzzer(&buzzer);
     ctrl.init();
     disp.init();
-    // LittleFS.begin();
     readIni();
     readCountdownCSV();
     disp.menu(ctrl.getMenuPage());
+    Serial.println(millis() - msPocetak); // todo kolika je ova vrednost? ~2350
 }
 
 /// @brief Go to sleep if the time is not currently measured.
@@ -174,6 +178,7 @@ void loop()
                 disp.ItIsOn(ms);
         }
         int res = cd.refresh(ms, t);
+        // TODO if(justAwaken) -> res = 1, t = 00:00
         if (cd.getState() == CdCountdown)
         {
             if (res == 1 && !disp.IsItOn())
@@ -202,6 +207,15 @@ void loop()
                 disp.menu(cd.getMenuPage());
             }
         }
+        if (click == ShortClick && idxBtn == CenterButton)
+        {
+            disp.turnOff();
+            // B
+            // Sleeper::setMem(SleepMem(AppCountdown, idxPage, 0));
+            // cd.setSleepMem();
+            Sleeper::setMem(SleepMem(AppCountdown, cd.getIdxPage(), 0));
+            Sleeper::sleep(cd.getSleepInterval(ms));
+        }
         return;
     }
     if (activeApp == AppTimeWatcher)
@@ -229,6 +243,17 @@ void loop()
         {
             activeApp = NoApp;
             disp.menu(ctrl.getMenuPage());
+        }
+        return;
+    }
+    if (activeApp == AppWebServer)
+    {
+        if (!ws.refresh())
+        {
+            activeApp = NoApp;
+            readCountdownCSV();
+            disp.menu(ctrl.getMenuPage());
+            //? ESP.reset();
         }
         return;
     }
@@ -291,6 +316,13 @@ void loop()
                 disp.turnOff();
                 tw.initTime();
                 disp.turnOn();
+                return;
+            }
+            if (ctrl.getMenuItemName(idxBtn) == MI_WEBSERVER)
+            {
+                activeApp = AppWebServer;
+                disp.turnOff();
+                ws.start();
                 return;
             }
         }

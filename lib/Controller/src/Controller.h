@@ -18,6 +18,7 @@ struct MenuItem
 #define MI_STOPWATCH "Stopwatch"
 #define MI_TURNOFFSCR "TurnOffScr"
 #define MI_GOTOSLEEP "GoToSleep"
+#define MI_WEBSERVER "WebServer"
 
 class Controller
 {

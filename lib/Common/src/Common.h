@@ -5,5 +5,6 @@ enum Apps
     NoApp,
     AppStopwatch,
     AppCountdown,
-    AppTimeWatcher
+    AppTimeWatcher,
+    AppWebServer,
 };

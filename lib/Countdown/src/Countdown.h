@@ -6,7 +6,7 @@
 #include "WString.h"
 #include <LinkedList.h>
 
-typedef unsigned long ulong;
+//B typedef unsigned long ulong;
 
 /// @brief Countdown app states: Menu, Countdown
 enum CdAppState
@@ -30,7 +30,7 @@ private:
     // LinkedList<CdItem> *items = new LinkedList<CdItem>();
     LinkedList<CdItem> items;
     /// @brief Time when Countdown is started (in milliseconds).
-    ulong msStartTime;
+    uint32_t msStartTime;
     CdItem currentItem;
     int idxPage = 0;
 
@@ -38,11 +38,12 @@ public:
     void addMenuItem(const CdItem &it);
     CdAppState getState() { return state; }
     void setState(CdAppState state) { this->state = state; }
-    // void start(ulong ms) { msStartTime = ms; }
+    int getIdxPage() { return idxPage; }
+    uint32_t getSleepInterval(uint32_t ms) { return currentItem.CDownTime.toMilliSeconds() - (ms - msStartTime); }
     void goToNextPage();
 
     LinkedList<String> *getMenuPage();
 
-    int refresh(ulong ms, Time &t);
-    void buttons(ulong ms, int idxBtn, ClickType click);
+    int refresh(uint32_t ms, Time &t);
+    void buttons(uint32_t ms, int idxBtn, ClickType click);
 };
