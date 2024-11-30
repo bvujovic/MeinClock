@@ -13,5 +13,4 @@ public:
 
     bool start();
     bool refresh();
-    void stop();
 };

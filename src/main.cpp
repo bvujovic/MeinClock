@@ -92,7 +92,7 @@ void saveIni()
 
 void setup()
 {
-    uint32_t msPocetak = millis();
+    // uint32_t msPocetak = millis();
     Serial.begin(115200);
     Serial.println("\n*** MEIN CLOCK ***");
     pinMode(buzzer.getPin(), OUTPUT);
@@ -103,7 +103,7 @@ void setup()
     readIni();
     readCountdownCSV();
     disp.menu(ctrl.getMenuPage());
-    Serial.println(millis() - msPocetak); // todo kolika je ova vrednost? ~2350
+    // Serial.println(millis() - msPocetak); // todo kolika je ova vrednost? ~2350
 }
 
 /// @brief Go to sleep if the time is not currently measured.
@@ -207,15 +207,17 @@ void loop()
                 disp.menu(cd.getMenuPage());
             }
         }
-        if (click == ShortClick && idxBtn == CenterButton)
-        {
-            disp.turnOff();
-            // B
-            // Sleeper::setMem(SleepMem(AppCountdown, idxPage, 0));
-            // cd.setSleepMem();
-            Sleeper::setMem(SleepMem(AppCountdown, cd.getIdxPage(), 0));
-            Sleeper::sleep(cd.getSleepInterval(ms));
-        }
+        //TODO nastaviti eksperimente sa Sleeper klasom i razmisliti o koriscenju hub-a i ESP-NOW za
+        //TODO cuvanje i vracanje proteklog vremena
+        // if (click == ShortClick && idxBtn == CenterButton)
+        // {
+        //     disp.turnOff();
+        //     // B
+        //     // Sleeper::setMem(SleepMem(AppCountdown, idxPage, 0));
+        //     // cd.setSleepMem();
+        //     Sleeper::setMem(SleepMem(AppCountdown, cd.getIdxPage(), 0));
+        //     Sleeper::sleep(cd.getSleepInterval(ms));
+        // }
         return;
     }
     if (activeApp == AppTimeWatcher)
@@ -323,6 +325,7 @@ void loop()
                 activeApp = AppWebServer;
                 disp.turnOff();
                 ws.start();
+                buzzer.blink(100, 2);
                 return;
             }
         }

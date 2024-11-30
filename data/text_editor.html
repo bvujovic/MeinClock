@@ -9,17 +9,12 @@
     <!-- <link href="inc/style.css" rel="stylesheet" type="text/css"> -->
     <style>
         * {
-            color: white;
+            font-family: 'Segoe UI', Verdana, sans-serif;
         }
 
-        input,
-        select,
-        option {
-            color: black;
-        }
-
-        textarea {
-            background-color: black;
+        .btn {
+            padding: 3px 15px;
+            width: 111px;
         }
     </style>
     <script>
@@ -73,10 +68,6 @@
 <body onload=''>
     <h1 id='h1'>Mein Clock</h1>
 
-    <!-- <p>
-        <a href="/">Home</a>
-    </p> -->
-    <!-- <table class="head-tbl"> -->
     <table>
         <tr>
             <td>File Name:</td>
@@ -95,8 +86,16 @@
         </tr>
         <tr>
             <td></td>
-            <td><input type="button" id='btnSaveFile' value="Save file" onclick="SaveFile()" style="padding: 3px 15px;">
+            <td><input type="button" id='btnSaveFile' class="btn" value="Save File" onclick="SaveFile()">
             </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><a href="/stopServer">Stop Server</a></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><a href="/otaUpdate">Start OTA Updates</a></td>
         </tr>
     </table>
 </body>

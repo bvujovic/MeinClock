@@ -3,6 +3,9 @@
 ESP8266WebServer server(80);
 bool isRunning = true;
 
+#include <ArduinoOTA.h>
+bool isOtaOn = false;
+
 void handleTestJson()
 {
     server.send(200, "application/json", "{ 'app': 'MeinClock' }");
@@ -15,8 +18,12 @@ void handleIndex()
 
 void handleStop()
 {
+    isRunning = false;
     SendEmptyText(server);
     server.stop();
+    WiFi.disconnect();
+    WiFi.mode(WIFI_OFF);
+    WiFi.forceSleepBegin();
 }
 
 String textFileName;
@@ -47,12 +54,17 @@ bool WebServer::start()
         server.on("/test", handleTestJson);
         server.on("/", []()
                   { handleIndex(); });
-        server.on("/stop", []()
+        server.on("/stopServer", []()
                   { handleStop(); });
         server.on("/loadTextFile", handleLoadTextFile);
         server.on("/saveTextFile", handleSaveTextFile);
+        server.on("/otaUpdate", []()
+                  {
+              server.send(200, "text/plain", "ESP is waiting for OTA updates...");
+              isOtaOn = true;
+              ArduinoOTA.begin(); });
         server.begin();
-        return true;
+        return isRunning = true;
     }
     else
         return false;
@@ -60,11 +72,9 @@ bool WebServer::start()
 
 bool WebServer::refresh()
 {
-    server.handleClient();
+    if (isOtaOn)
+        ArduinoOTA.handle();
+    else if (isRunning)
+        server.handleClient();
     return isRunning;
-}
-
-void WebServer::stop()
-{
-    server.stop();
 }
